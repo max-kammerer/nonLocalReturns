@@ -1,0 +1,112 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:0.8'
+        classpath 'org.apache.commons:commons-io:1.3.2'
+    }
+}
+
+apply plugin: 'java'
+version = '1.0'
+defaultTasks 'build'
+
+project.ext{
+    witerations = 4
+    iterations = 6
+    java6 = "/home/mike/devel/tools/java/jdk1.6.0_38/bin/java"
+    java7 = "/home/mike/devel/projects/benchmark/jdks/jdk1.7.0_55/bin/java"
+    java8 = "/home/mike/devel/projects/benchmark/jdks/jdk1.8.0_05/bin/java"
+    resultFile = "result.txt"
+}
+
+repositories {
+    mavenCentral()
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'org.openjdk.jmh.Main'
+    }
+}
+
+ext {
+    lib = [ jmh: 'org.openjdk.jmh:jmh-core:0.7.3' ]
+}
+
+dependencies {
+    compile lib.jmh
+    compile "org.openjdk.jmh:jmh-generator-annprocess:0.7.3"
+    runtime 'org.apache.commons:commons-io:1.3.2'
+}
+
+
+task buildBenchmarks(dependsOn: build) {
+    apply plugin: "shadow"
+
+    shadow {
+        classifier = "benchmarks"
+
+        transformer(com.github.jengelman.gradle.plugins.shadow.transformers.ManifestResourceTransformer) {
+            mainClass = "org.openjdk.jmh.Main"
+        }
+    }
+
+    doLast {
+        shadowJar.execute()
+    }
+
+}
+
+compileJava {
+    options.compilerArgs << "-Xlint:unchecked"
+    sourceCompatibility = 1.6
+}
+
+task runjmh6(dependsOn: buildBenchmarks, type: JavaExec) {
+    configureJavac(runjmh6, java6)
+}
+
+task runjmh7(dependsOn: buildBenchmarks, type: JavaExec) {
+    configureJavac(runjmh7, java7)
+}
+
+task runjmh8(dependsOn: buildBenchmarks, type: JavaExec) {
+    configureJavac(runjmh8, java8)
+}
+
+task runBenchmakrs(dependsOn: buildBenchmarks) {
+    def file = new File(resultFile);
+    if (file.exists()) {
+        file.delete();
+    }
+    file.createNewFile();
+
+    doLast {
+        println "Java 6"
+        runjmh6.execute()
+        println "Java 7"
+        runjmh7.execute()
+        println "Java 8"
+        runjmh8.execute()
+    }
+}
+
+task runjmh(dependsOn: buildBenchmarks, type: JavaExec) {
+    main = 'org.openjdk.jmh.Main'
+    args ".*primitive.*", "-wi", witerations, "-i", iterations, "-f", 1, "-bm", "avgt", "gc"
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+def configureJavac(java, executable) {
+    java.executable = executable
+    java.main = 'org.openjdk.jmh.Main'
+    java.args ".*primitive.*", "-wi", witerations, "-i", iterations, "-f", 1, "-bm", "avgt", "gc"
+    //java.args ".*", "-wi", witerations, "-i", iterations, "-f", 1, "-bm", "avgt", "gc"
+    java.classpath = sourceSets.main.runtimeClasspath
+    //java.standardOutput = new FileOutputStream(resultFile, false)
+    java.standardOutput = System.out
+}
+

@@ -6,14 +6,14 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.logic.BlackHole;
 
 @State(Scope.Thread)
-public class BoxTest {
+public class BoxFieldTest {
 
     int iterations = Util.ITERATION;
 
     @GenerateMicroBenchmark
     public void testInt(BlackHole bh) {
         for (int i = 0; i < iterations; i++) {
-            Box<Integer, Integer> result = intOperation(i);
+            BoxField<Integer, Integer> result = intOperation(i);
             if (result.doNonLocalReturn) {
                 bh.consume(result.nonLocalResult.intValue());
             } else {
@@ -22,18 +22,22 @@ public class BoxTest {
         }
     }
 
-    public Box<Integer, Integer> intOperation(int i) {
+    public BoxField<Integer, Integer> intOperation(int i) {
+        BoxField<Integer, Integer> boxField = new BoxField<Integer, Integer>();
         if (i % 2 == 0) {
-            return new Box<Integer, Integer>(false, i, null);
+            boxField.localResult = i;
+            return boxField;
         } else {
-            return new Box<Integer, Integer>(true, null, i*2);
+            boxField.doNonLocalReturn = true;
+            boxField.nonLocalResult = i * 2;
+            return boxField;
         }
     }
 
     @GenerateMicroBenchmark
     public void testObject(BlackHole bh) {
         for (int i = 0; i < iterations; i++) {
-            Box result = objectOperation(i);
+            BoxField result = objectOperation(i);
             if (result.doNonLocalReturn) {
                 bh.consume(result.nonLocalResult);
             } else {
@@ -42,11 +46,15 @@ public class BoxTest {
         }
     }
 
-    public Box<String, String> objectOperation(int i) {
+    public BoxField<String, String> objectOperation(int i) {
+        BoxField<String, String> boxField = new BoxField<String, String>();
         if (i % 2 == 0) {
-            return new Box<String, String>(false, String.valueOf(i), null);
+            boxField.localResult = String.valueOf(i);
+            return boxField;
         } else {
-            return new Box<String, String>(true, null, String.valueOf(i*2));
+            boxField.doNonLocalReturn = true;
+            boxField.nonLocalResult = String.valueOf(i*2);
+            return boxField;
         }
     }
 

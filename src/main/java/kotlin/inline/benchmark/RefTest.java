@@ -8,7 +8,7 @@ import org.openjdk.jmh.logic.BlackHole;
 @State(Scope.Thread)
 public class RefTest {
 
-    int iterations = Util.ITERATION;
+    final int iterations = Util.ITERATION;
 
     @GenerateMicroBenchmark
     public void testInt(BlackHole bh) {

@@ -9,7 +9,7 @@ import org.openjdk.jmh.logic.BlackHole;
 @State(Scope.Thread)
 public class RefIntTest {
 
-    int iterations = Util.ITERATION;
+    final int iterations = Util.ITERATION;
 
     @GenerateMicroBenchmark
     public void testInt(BlackHole bh) {

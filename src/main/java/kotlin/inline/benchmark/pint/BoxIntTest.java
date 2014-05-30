@@ -9,9 +9,9 @@ import org.openjdk.jmh.logic.BlackHole;
 @State(Scope.Thread)
 public class BoxIntTest {
 
-    int iterations = Util.ITERATION;
+    final int iterations = Util.ITERATION;
 
-    @GenerateMicroBenchmark
+    //@GenerateMicroBenchmark
     public void testInt(BlackHole bh) {
         for (int i = 0; i < iterations; i++) {
             BoxInt result = intOperation(i);

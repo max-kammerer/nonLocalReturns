@@ -96,15 +96,15 @@ task runBenchmakrs(dependsOn: buildBenchmarks) {
 
 task runjmh(dependsOn: buildBenchmarks, type: JavaExec) {
     main = 'org.openjdk.jmh.Main'
-    args ".*primitive.*", "-wi", witerations, "-i", iterations, "-f", 1, "-bm", "avgt", "gc"
+    args ".*pi1nt.*", "-wi", witerations, "-i", iterations, "-f", 1, "-bm", "avgt", "gc"
     classpath = sourceSets.main.runtimeClasspath
 }
 
 def configureJavac(java, executable) {
     java.executable = executable
     java.main = 'org.openjdk.jmh.Main'
-    java.args ".*primitive.*", "-wi", witerations, "-i", iterations, "-f", 1, "-bm", "avgt", "gc"
-    //java.args ".*", "-wi", witerations, "-i", iterations, "-f", 1, "-bm", "avgt", "gc"
+    //java.args ".*pint.*", "-wi", witerations, "-i", iterations, "-f", 1, "-bm", "avgt", "gc"
+    java.args ".*", "-wi", witerations, "-i", iterations, "-f", 1, "-bm", "avgt", "gc"
     java.classpath = sourceSets.main.runtimeClasspath
     //java.standardOutput = new FileOutputStream(resultFile, false)
     java.standardOutput = System.out

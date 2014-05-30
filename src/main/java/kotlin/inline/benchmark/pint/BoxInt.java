@@ -1,4 +1,4 @@
-package kotlin.inline.benchmark.primitive;
+package kotlin.inline.benchmark.pint;
 
 public class BoxInt {
     public final boolean doNonLocalReturn;

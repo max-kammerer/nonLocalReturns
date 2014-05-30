@@ -1,4 +1,4 @@
-package kotlin.inline.benchmark.primitive;
+package kotlin.inline.benchmark.pint;
 
 import kotlin.inline.benchmark.Util;
 import org.openjdk.jmh.annotations.GenerateMicroBenchmark;
